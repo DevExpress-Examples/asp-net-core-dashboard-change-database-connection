@@ -1,0 +1,70 @@
+using DevExpress.AspNetCore;
+using DevExpress.DashboardAspNetCore;
+using DevExpress.DashboardCommon;
+using DevExpress.DashboardWeb;
+using DevExpress.DataAccess.ConnectionParameters;
+using DevExpress.DataAccess.Sql;
+using Microsoft.Extensions.FileProviders;
+
+var builder = WebApplication.CreateBuilder(args);
+
+IFileProvider fileProvider = builder.Environment.ContentRootFileProvider;
+IConfiguration configuration = builder.Configuration;
+
+// Add services to the container.
+builder.Services.AddRazorPages();
+builder.Services.AddDevExpressControls();
+
+builder.Services.AddScoped<DashboardConfigurator>((IServiceProvider serviceProvider) => {
+    DashboardConfigurator configurator = new DashboardConfigurator();
+    
+    configurator.SetConnectionStringsProvider(new DashboardConnectionStringsProvider(configuration));
+    configurator.SetDashboardStorage(new DashboardFileStorage(fileProvider.GetFileInfo("Data/Dashboards").PhysicalPath));
+
+    DataSourceInMemoryStorage dataSourceStorage = new DataSourceInMemoryStorage();
+    var dataSourceSQL = new DashboardSqlDataSource("SQL Data Source", "nwind");
+    var query = SelectQueryFluentBuilder
+        .AddTable("Products")
+        .SelectColumns("ProductID", "ProductName", "UnitPrice")
+        .Build("Products");
+    dataSourceSQL.Queries.Add(query);
+    dataSourceStorage.RegisterDataSource("sqlDataSource", dataSourceSQL.SaveToXml());
+
+    configurator.SetDataSourceStorage(dataSourceStorage);
+
+    configurator.ConfigureDataConnection += (s, e) => {
+        if (e.ConnectionName == "nwind") {
+            IHttpContextAccessor httpContextAccessor = serviceProvider.GetService<IHttpContextAccessor>();
+            IHeaderDictionary headers = httpContextAccessor.HttpContext.Request.Headers;
+            string connectionString = string.Format(
+                "XpoProvider=InMemoryDataStore;Read Only=true;Data Source=Data\\{0}.xml",
+                headers.ContainsKey("database") ? headers["database"] : "nwind");
+
+            e.ConnectionParameters = new CustomStringConnectionParameters(connectionString);
+        }
+    };
+
+    return configurator;
+});
+
+var app = builder.Build();
+
+// Configure the HTTP request pipeline.
+if (!app.Environment.IsDevelopment())
+{
+    app.UseExceptionHandler("/Error");
+    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
+    app.UseHsts();
+}
+
+app.UseHttpsRedirection();
+app.UseStaticFiles();
+
+app.UseDevExpressControls();
+app.MapDashboardRoute("api/dashboard", "DefaultDashboard");
+
+app.UseRouting();
+app.UseAuthorization();
+app.MapRazorPages();
+
+app.Run();
