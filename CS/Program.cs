@@ -36,9 +36,12 @@ builder.Services.AddScoped<DashboardConfigurator>((IServiceProvider serviceProvi
         if (e.ConnectionName == "nwind") {
             IHttpContextAccessor httpContextAccessor = serviceProvider.GetService<IHttpContextAccessor>();
             IHeaderDictionary headers = httpContextAccessor.HttpContext.Request.Headers;
-            string connectionString = string.Format(
-                "XpoProvider=InMemoryDataStore;Read Only=true;Data Source=Data\\{0}.xml",
-                headers.ContainsKey("database") ? headers["database"] : "nwind");
+            string dbKey = headers.ContainsKey("database") ? headers["database"] : "nwind";
+            string connectionString = dbKey switch {
+                "nwind" => "XpoProvider=InMemoryDataStore;Read Only=true;Data Source=Data\\nwind.xml",
+                "nwind2" => "XpoProvider=InMemoryDataStore;Read Only=true;Data Source=Data\\nwind2.xml",
+                _ => throw new ArgumentOutOfRangeException("Incorrect database name")
+            };
 
             e.ConnectionParameters = new CustomStringConnectionParameters(connectionString);
         }

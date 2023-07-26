@@ -13,6 +13,7 @@
 
   <ItemGroup>
     <Folder Include="Data\Dashboards\" />
+    <Folder Include="wwwroot\css\" />
   </ItemGroup>
 
 </Project>
