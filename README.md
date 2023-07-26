@@ -4,7 +4,7 @@
 <!-- default badges end -->
 # Dashboard for ASP.NET Core - How to Change the Database Connection from the Web Dashboard UI
 
-The example shows how to switch between database connections from the Web Dashboard UI. To implement conditional logic for the Web Dashboard Control, pass custom headers from the client side to the server. 
+The example shows how to switch between database connections from the Web Dashboard UI. To implement conditional logic for the Web Dashboard Control, pass custom headers from the client to the server. 
 
 ![](images/designer-toolbar.png)
 
