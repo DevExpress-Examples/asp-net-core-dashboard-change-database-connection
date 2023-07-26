@@ -3,23 +3,28 @@
 [![](https://img.shields.io/badge/Open_in_DevExpress_Support_Center-FF7200?style=flat-square&logo=DevExpress&logoColor=white)](https://supportcenter.devexpress.com/ticket/details/T1179666)
 [![](https://img.shields.io/badge/📖_How_to_use_DevExpress_Examples-e9f6fc?style=flat-square)](https://docs.devexpress.com/GeneralInformation/403183)
 <!-- default badges end -->
-# Dashboard for ASP.NET Core - How to change database connection in the dashboard designer using UI
+# Dashboard for ASP.NET Core - How to Change the Database Connection from the Dashboard UI
 
-The main purpose of this example is to illustrate how to pass custom parameters (not [Dashboard Parameters](https://docs.devexpress.com/Dashboard/117062/web-dashboard/create-dashboards-on-the-web/data-analysis/dashboard-parameters)) from the client side to the server to implement conditional logic for Dashboards. In this specific example we switch the database connection.
+The example shows how to switch between database connections from the Web Dashboard UI. To implement conditional logic for the Web Dashboard Control, pass custom headers from the client side to the server. 
 
-To complete this task we add two buttons in the [Designer Toolbar](https://docs.devexpress.com/Dashboard/403426/web-dashboard/ui-elements-and-customization/designer-toolbar). Once any button is clicked, we put the custom parameter to the [AjaxRemoteService.headers](https://docs.devexpress.com/Dashboard/js-DevExpress.Dashboard.AjaxRemoteService#js_devexpress_dashboard_ajaxremoteservice_headers) dictionary. After that, the [DashboardControl.reloadData](https://docs.devexpress.com/Dashboard/js-DevExpress.Dashboard.DashboardControl#js_devexpress_dashboard_dashboardcontrol_reloaddata) method call initiates a data reloding callback (See also: [Manage an In-Memory Data Cache](https://docs.devexpress.com/Dashboard/400983/web-dashboard/dashboard-backend/manage-an-in-memory-data-cache)).
+![]()
 
-On the server, the [IHttpContextAccessor](https://docs.microsoft.com/en-us/aspnet/core/fundamentals/http-context?view=aspnetcore-3.0) with dependency injection is used to access the passed parameter value (database name) in code (`HttpContext.Request.Headers["database"]`) in the [DashboardConfigurator.ConfigureDataConnection](https://docs.devexpress.com/Dashboard/DevExpress.DashboardWeb.DashboardConfigurator.ConfigureDataConnection) event handler. Note that we use the [CustomStringConnectionParameters](https://docs.devexpress.com/CoreLibraries/DevExpress.DataAccess.ConnectionParameters.CustomStringConnectionParameters) class instance to initialize and apply a custom connection string in a convenient manner
+To be able to switch between databases from the UI, add buttons corresponding to databases to the Designer Toolbox (see the [customizeToolbar.js]() file). Use the [`preparing`](https://docs.devexpress.com/Dashboard/js-DevExpress.Dashboard.Designer.DesignerToolbarExtensionOptions?p=netframework#js_devexpress_dashboard_designer_designertoolbarextensionoptions_onpreparing) event to customize the existing items in the Designer Toolbar. 
+
+On the client, when a button is clicked, a custom header with the corresponding database name (*nwind*/*nwind2*) is added to the [fetchRemoteService.headers](https://docs.devexpress.com/Dashboard/js-DevExpress.Dashboard.AjaxRemoteService#js_devexpress_dashboard_ajaxremoteservice_headers) dictionary. After that, the [DashboardControl.reloadData](https://docs.devexpress.com/Dashboard/js-DevExpress.Dashboard.DashboardControl#js_devexpress_dashboard_dashboardcontrol_reloaddata) method reloads the data. Refer to the following topic for more information: [Manage an In-Memory Data Cache](https://docs.devexpress.com/Dashboard/400983/web-dashboard/dashboard-backend/manage-an-in-memory-data-cache).
+
+On the server, the [IHttpContextAccessor](https://docs.microsoft.com/en-us/aspnet/core/fundamentals/http-context?view=aspnetcore-3.0) with dependency injection is used to access the passed parameter value (database name) in the [DashboardConfigurator.ConfigureDataConnection](https://docs.devexpress.com/Dashboard/DevExpress.DashboardWeb.DashboardConfigurator.ConfigureDataConnection) event handler. The [CustomStringConnectionParameters](https://docs.devexpress.com/CoreLibraries/DevExpress.DataAccess.ConnectionParameters.CustomStringConnectionParameters) class instance is used to initialize and apply a custom connection string.
 
 ## Files to Review
 
 * [Program.cs](./CS/Program.cs)
+* [customizeToolbar.js](./CS/wwwroot/js/customizeToolbar.js)
 * [Index.cshtml](./CS/Pages/Index.cshtml)
 
 ## Documentation
 
 * [Designer Toolbar](https://docs.devexpress.com/Dashboard/403426/web-dashboard/ui-elements-and-customization/designer-toolbar)
-* [Manage an In-Memory Data Cache](https://docs.devexpress.com/Dashboard/400983/web-dashboard/dashboard-backend/manage-an-in-memory-data-cache)).
+* [Manage an In-Memory Data Cache](https://docs.devexpress.com/Dashboard/400983/web-dashboard/dashboard-backend/manage-an-in-memory-data-cache).
 
 ## More Examples
 
